@@ -1,8 +1,8 @@
-#pimatic-bme280 configuration options
+#pimatic-bmp280 configuration options
 module.exports = {
-  title: "pimatic-bme280 config"
+  title: "pimatic-bmp280 config"
   BME280Sensor: {
-    title: "BME280Sensor config options"
+    title: "BMP280Sensor config options"
     type: "object"
     extensions: ["xLink","xAttributeOptions"]
     properties: {
