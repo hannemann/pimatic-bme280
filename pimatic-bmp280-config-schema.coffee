@@ -1,6 +1,6 @@
 #pimatic-bme280 configuration options
 module.exports = {
-  title: "pimatic-bme280 config"
+  title: "pimatic-bmp280 config"
   type: "object"
   properties: {
     debug:
