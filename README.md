@@ -1,10 +1,6 @@
-# pimatic-bme280
+# pimatic-bmp280
 
-
-[![npm version](https://badge.fury.io/js/pimatic-bme280.svg)](http://badge.fury.io/js/pimatic-bme280)
-[![dependencies status](https://david-dm.org/atus/pimatic-bme280/status.svg)](https://david-dm.org/atus/pimatic-bme280)
-
-A pimatic plugin for modules based on the [BME280](https://www.bosch-sensortec.com/bst/products/all_products/bme280) sensor. It uses the `node-bme280` driver from [CLCL/node-BME280](https://github.com/CLCL/node-BME280).
+A pimatic plugin for modules based on the [BMP280](https://www.adafruit.com/product/2651) sensor. It uses the `bme280-sensor` driver from [skylarstein/bme280-sensor](https://github.com/skylarstein/bme280-sensor).
 
 ## Configuring device
 
@@ -12,9 +8,9 @@ Add a device via the web UI or by editing the config file.
 
 ```
     {
-      "class": "BME280Sensor"
-      "id": "bme280-test",
-      "name": "BME280 test",
+      "class": "BMP280Sensor"
+      "id": "bmp280-test",
+      "name": "BMp280 test",
       "device": "i2c-1",
       "address": "0x76",
       "interval": 10000,
