@@ -1,20 +1,20 @@
 {
-  "name": "pimatic-bme280",
-  "version": "0.1.2",
-  "description": "Pimatic plugin for the bme280 barometric pressure sensor",
-  "main": "pimatic-bme280",
+  "name": "pimatic-bmp280",
+  "version": "0.1.0",
+  "description": "Pimatic plugin for the bmp280 barometric pressure sensor",
+  "main": "pimatic-bmp280",
   "files": [
     "README.md",
-    "pimatic-bme280.coffee",
+    "pimatic-bmp280.coffee",
     "device-config-schema.coffee",
-    "pimatic-bme280-config-schema.coffee"
+    "pimatic-bmp280-config-schema.coffee"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/atus/pimatic-bme280.git"
+    "url": "git://github.com/hannemann/pimatic-bmp280.git"
   },
   "keywords": [
     "pimatic",
@@ -24,16 +24,13 @@
     "iot"
   ],
   "author": {
-    "name": "Alan Tus"
+    "name": "Alan Tus / Hannemann"
   },
   "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/atus/pimatic-bme280/issues"
-  },
-  "homepage": "https://github.com/atus/pimatic-bme280#readme",
-  "configSchema": "pimatic-bme280-config-schema.coffee",
+  "homepage": "https://github.com/hannemann/pimatic-bmp280#readme",
+  "configSchema": "pimatic-bmp280-config-schema.coffee",
   "dependencies": {
-    "node-bme280": "0.1.3"
+    "bme280-sensor": "0.1.*"
   },
   "peerDependencies": {
     "pimatic": "0.9.*"
