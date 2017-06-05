@@ -16,8 +16,20 @@ module.exports = {
         default: "0x76"
       interval:
         description: "Interval in ms"
-        type: "integer"
-        default: "10000"
+        type: "number"
+        default: 10000
+      processingTemp:
+        description: "
+          expression that can preprocess the value, $value is a placeholder for the temperature
+          value itself."
+        type: "string"
+        default: "$value"
+      processingHpa:
+        description: "
+          expression that can preprocess the value, $value is a placeholder for the pressure
+          value itself."
+        type: "string"
+        default: "$value"
     }
   }
 }

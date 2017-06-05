@@ -42,6 +42,24 @@ module.exports = (env) ->
       @_pressure = lastState?.pressure?.value
       @_temperature = lastState?.temperature?.value
 
+      getterFor = (attrName, processing) =>
+        return( () =>
+          Promise.resolve(this["_#{attrName}"]).then( (result) =>
+            variableManager = myPlugin.framework.variableManager
+            info = variableManager.parseVariableExpression(
+              processing.replace(/\$value\b/g, this["_#{attrName}"])
+            )
+            return variableManager.evaluateNumericExpression(info.tokens)
+          )
+        )
+
+      tempGetter = getterFor('temperature', @config.processingTemp or "$value")
+      @_createGetter('temperature', tempGetter)
+      @_setupPolling('temperature', @config.interval)
+      hpaGetter = getterFor('pressure', @config.processingHpa or "$value")
+      @_createGetter('pressure', hpaGetter)
+      @_setupPolling('pressure', @config.interval)
+
       BME280 = require 'bme280-sensor'
       @sensor = new BME280({
         i2cAddress: parseInt @config.address
@@ -67,17 +85,11 @@ module.exports = (env) ->
       @sensor.readSensorData().then( ( (data) ->
         if data.pressure_hPa != @_pressure
           @_pressure = data.pressure_hPa
-          @emit 'pressure', data.pressure_hPa
-      
         if data.temperature_C != @_temperature
           @_temperature = data.temperature_C
-          @emit 'temperature', data.temperature_C
       ).bind(this), ( (err) ->
           env.logger.debug "bmp280 reading failed #{err}"
       ).bind(this) )
-
-    getPressure: () ->Promise.resolve(@_pressure)
-    getTemperature: () -> Promise.resolve(@_temperature)
 
   myPlugin = new BMP280Plugin
   return myPlugin
