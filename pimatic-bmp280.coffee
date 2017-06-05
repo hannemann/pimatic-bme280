@@ -29,18 +29,25 @@ module.exports = (env) ->
         type: "number"
         unit: '°C'
         acronym: 'T'
+      humidity:
+        description: "The measured humidity"
+        type: "number"
+        unit: "%"
+        acronym: "RH"
 
     template: "temperature"
 
   class BMP280Sensor extends PressureSensor
     _pressure: null
     _temperature: null
+    _humidity: null
 
     constructor: (@config, lastState) ->
       @id = @config.id
       @name = @config.name
-      @_pressure = lastState?.pressure?.value
-      @_temperature = lastState?.temperature?.value
+      @_pressure = lastState?.pressure?.value or 0
+      @_temperature = lastState?.temperature?.value or 0
+      @_humidity = lastState?.humidity?.value or 0
 
       getterFor = (attrName, processing) =>
         return( () =>
@@ -56,9 +63,14 @@ module.exports = (env) ->
       tempGetter = getterFor('temperature', @config.processingTemp or "$value")
       @_createGetter('temperature', tempGetter)
       @_setupPolling('temperature', @config.interval)
+
       hpaGetter = getterFor('pressure', @config.processingHpa or "$value")
       @_createGetter('pressure', hpaGetter)
       @_setupPolling('pressure', @config.interval)
+
+      humGetter = getterFor('humidity', @config.processingHum or "$value")
+      @_createGetter('humidity', humGetter)
+      @_setupPolling('humidity', @config.interval)
 
       BME280 = require 'bme280-sensor'
       @sensor = new BME280({
@@ -87,6 +99,8 @@ module.exports = (env) ->
           @_pressure = data.pressure_hPa
         if data.temperature_C != @_temperature
           @_temperature = data.temperature_C
+        if data.humidity != @_humidity
+          @_humidity = data.humidity
       ).bind(this), ( (err) ->
           env.logger.debug "bmp280 reading failed #{err}"
       ).bind(this) )

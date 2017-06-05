@@ -19,15 +19,15 @@ module.exports = {
         type: "number"
         default: 10000
       processingTemp:
-        description: "
-          expression that can preprocess the value, $value is a placeholder for the temperature
-          value itself."
+        description: "expression that can preprocess the value, $value is a placeholder for the temperature value itself."
         type: "string"
         default: "$value"
       processingHpa:
-        description: "
-          expression that can preprocess the value, $value is a placeholder for the pressure
-          value itself."
+        description: "expression that can preprocess the value, $value is a placeholder for the pressure value itself."
+        type: "string"
+        default: "$value"
+      processingHum:
+        description: "expression that can preprocess the value, $value is a placeholder for the humidity value itself."
         type: "string"
         default: "$value"
     }
