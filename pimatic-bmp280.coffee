@@ -4,12 +4,12 @@ module.exports = (env) ->
   declapi = env.require 'decl-api'
   t = declapi.types
 
-  class BME280Plugin extends env.plugins.Plugin
+  class BMP280Plugin extends env.plugins.Plugin
     init: (app, @framework, @config) =>
       deviceConfigDef = require("./device-config-schema")
 
-      @framework.deviceManager.registerDeviceClass("BME280Sensor", {
-        configDef: deviceConfigDef.BME280Sensor,
+      @framework.deviceManager.registerDeviceClass("BMP280Sensor", {
+        configDef: deviceConfigDef.BMP280Sensor,
         createCallback:(config, lastState) =>
           device = new BME280Sensor(config, lastState)
           return device
@@ -28,28 +28,21 @@ module.exports = (env) ->
         type: t.number
         unit: '°C'
         acronym: 'T'
-      humidity:
-        description: "Humidity"
-        type: t.number
-        unit: '%'
-        acronym: 'RH'
 
     template: "temperature"   
 
 
-  class BME280Sensor extends PressureSensor
+  class BMP280Sensor extends PressureSensor
     _pressure: null
     _temperature: null
-    _humidity: null
 
     constructor: (@config, lastState) ->
       @id = @config.id
       @name = @config.name
       @_pressure = lastState?.pressure?.value
       @_temperature = lastState?.temperature?.value
-      @_humidity = lastState?.humidity?.value
 
-      BME280 = require 'node-bme280'
+      BME280 = require 'bme280-sensor'
       @sensor = new BME280({
         address: parseInt @config.address
       });
@@ -66,21 +59,17 @@ module.exports = (env) ->
       super()
 
     requestValue: ->
-      @sensor.begin((err) =>
-        @sensor.readPressureAndTemparature( (err, pressure, temperature, humidity) =>
-          @_pressure = pressure/100
+      @sensor.readSensorData().then (data) =>
+        if data.pressure_hPa != @_pressure@_pressure
+          @_pressure = data.pressure_hPa
           @emit 'pressure', pressure/100
       
-          @_temperature = temperature
+        if data.temperature_C != @_temperature
+          @_temperature = data.temperature_C
           @emit 'temperature', temperature
-
-          @_humidity = humidity
-          @emit 'humidity', humidity
-        )
     )
     getPressure: -> Promise.resolve(@_pressure)
     getTemperature: -> Promise.resolve(@_temperature)
-    getHumidity: -> Promise.resolve(@_humidity)
 
-  myPlugin = new BME280Plugin
+  myPlugin = new BMP280Plugin
   return myPlugin
