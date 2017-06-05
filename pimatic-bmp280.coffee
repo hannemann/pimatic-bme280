@@ -11,26 +11,26 @@ module.exports = (env) ->
       @framework.deviceManager.registerDeviceClass("BMP280Sensor", {
         configDef: deviceConfigDef.BMP280Sensor,
         createCallback:(config, lastState) =>
-          device = new BME280Sensor(config, lastState)
+          device = new BMP280Sensor(config, lastState)
           return device
       })
 
 
   class PressureSensor extends env.devices.Sensor
+
     attributes:
       pressure:
-        description: "Barometric pressure"
-        type: t.number
+        description: "The measured barometric pressure"
+        type: "number"
         unit: 'hPa'
         acronym: 'ATM'
       temperature:
-        description: "Temperature"
-        type: t.number
+        description: "The measured temperature"
+        type: "number"
         unit: '°C'
         acronym: 'T'
 
-    template: "temperature"   
-
+    template: "temperature"
 
   class BMP280Sensor extends PressureSensor
     _pressure: null
@@ -44,32 +44,45 @@ module.exports = (env) ->
 
       BME280 = require 'bme280-sensor'
       @sensor = new BME280({
-        address: parseInt @config.address
+        i2cAddress: parseInt @config.address
       });
 
       Promise.promisifyAll(@sensor)
 
       super()
 
+      @sensor.init().then @startInterval.bind(this), (err) => env.logger.debug "bmp280 initialization failed #{err}"
+
+    startInterval: () ->
+      env.logger.debug "bmp280 initialized"
       @requestValue()
-      @requestValueIntervalId = setInterval( ( => @requestValue() ), @config.interval)
+      @requestValueIntervalId = setInterval( @requestValue.bind(this), @config.interval)
     
     destroy: () ->
       clearInterval @requestValueIntervalId if @requestValueIntervalId?
       super()
 
     requestValue: ->
-      @sensor.readSensorData().then (data) =>
-        if data.pressure_hPa != @_pressure@_pressure
+      env.logger.debug "Reading from bmp280"
+      @sensor.readSensorData().then( (data) ->
+        env.logger.debug data
+        if data.pressure_hPa != @_pressure
           @_pressure = data.pressure_hPa
-          @emit 'pressure', pressure/100
+          env.logger.debug @_pressure
+          @emit 'pressure', data.pressure_hPa
       
         if data.temperature_C != @_temperature
           @_temperature = data.temperature_C
-          @emit 'temperature', temperature
-    )
-    getPressure: -> Promise.resolve(@_pressure)
-    getTemperature: -> Promise.resolve(@_temperature)
+          @emit 'temperature', data.temperature_C
+      )
+
+    getPressure: () -> 
+      env.logger.debug("Pressure: ", @_pressure)
+      Promise.resolve(@_pressure)
+
+    getTemperature: () ->
+      env.logger.debug("Temp: ", @_temperature)
+      Promise.resolve(@_temperature)
 
   myPlugin = new BMP280Plugin
   return myPlugin

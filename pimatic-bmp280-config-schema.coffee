@@ -1,4 +1,4 @@
-#pimatic-bme280 configuration options
+#pimatic-bmp280 configuration options
 module.exports = {
   title: "pimatic-bmp280 config"
   type: "object"
