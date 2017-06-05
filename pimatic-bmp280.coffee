@@ -45,7 +45,7 @@ module.exports = (env) ->
       BME280 = require 'bme280-sensor'
       @sensor = new BME280({
         i2cAddress: parseInt @config.address
-      });
+      })
 
       Promise.promisifyAll(@sensor)
 
@@ -64,25 +64,20 @@ module.exports = (env) ->
 
     requestValue: ->
       env.logger.debug "Reading from bmp280"
-      @sensor.readSensorData().then( (data) ->
-        env.logger.debug data
+      @sensor.readSensorData().then( ( (data) ->
         if data.pressure_hPa != @_pressure
           @_pressure = data.pressure_hPa
-          env.logger.debug @_pressure
           @emit 'pressure', data.pressure_hPa
       
         if data.temperature_C != @_temperature
           @_temperature = data.temperature_C
           @emit 'temperature', data.temperature_C
-      )
+      ).bind(this), ( (err) ->
+          env.logger.debug "bmp280 reading failed #{err}"
+      ).bind(this) )
 
-    getPressure: () -> 
-      env.logger.debug("Pressure: ", @_pressure)
-      Promise.resolve(@_pressure)
-
-    getTemperature: () ->
-      env.logger.debug("Temp: ", @_temperature)
-      Promise.resolve(@_temperature)
+    getPressure: () ->Promise.resolve(@_pressure)
+    getTemperature: () -> Promise.resolve(@_temperature)
 
   myPlugin = new BMP280Plugin
   return myPlugin
